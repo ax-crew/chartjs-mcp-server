@@ -91,7 +91,7 @@ Here's what you can create with just a simple request:
 1. **Install the Server from Source**
    ```bash
    # Clone the repository
-   git clone https://github.com/your-username/chartjs-mcp-server.git
+   git clone https://github.com/ax-crew/chartjs-mcp-server.git
    cd chartjs-mcp-server
    
    # Install dependencies and build
@@ -132,7 +132,7 @@ Here's what you can create with just a simple request:
 
 1. **Install the Server** (same as above)
    ```bash
-   git clone https://github.com/your-username/chartjs-mcp-server.git
+   git clone https://github.com/ax-crew/chartjs-mcp-server.git
    cd chartjs-mcp-server
    npm install && npm run build
    ```
@@ -244,7 +244,7 @@ Want to improve this MCP server? We welcome contributions!
 
 ```bash
 # Clone and setup
-git clone https://github.com/your-username/chartjs-mcp-server.git
+git clone https://github.com/ax-crew/chartjs-mcp-server.git
 cd chartjs-mcp-server
 npm install
 
@@ -366,8 +366,8 @@ The server exposes one primary tool for chart generation:
 - 📚 [Chart.js Documentation](https://www.chartjs.org/docs/latest/)
 - 🔌 [Model Context Protocol](https://modelcontextprotocol.io/)
 - 🎨 [Example Charts](./examples/) - See all supported chart types
-- 🐛 [Issue Tracker](https://github.com/your-username/chartjs-mcp-server/issues)
-- 💬 [Discussions](https://github.com/your-username/chartjs-mcp-server/discussions)
+- 🐛 [Issue Tracker](https://github.com/ax-crew/chartjs-mcp-server/issues)
+- 💬 [Discussions](https://github.com/ax-crew/chartjs-mcp-server/discussions)
 
 ---
 
