@@ -86,25 +86,63 @@ Here's what you can create with just a simple request:
   - **Windows**: Visual Studio Build Tools or similar
   - **Linux**: build-essential package
 
-### Using with Claude Desktop
+### Easy NPM Installation (Recommended)
 
-1. **Install the Server from Source**
-   ```bash
-   # Clone the repository
-   git clone https://github.com/ax-crew/chartjs-mcp-server.git
-   cd chartjs-mcp-server
-   
-   # Install dependencies and build
-   npm install
-   npm run build
-   ```
+The simplest way to use this MCP server:
 
-2. **Configure Claude Desktop**
+1. **Configure Claude Desktop**
    
    Add this to your Claude Desktop configuration file:
    
    **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
    **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
+   
+   ```json
+   {
+     "mcpServers": {
+       "chartjs": {
+         "command": "npx",
+         "args": ["-y", "@ax-crew/chartjs-mcp-server"]
+       }
+     }
+   }
+   ```
+
+2. **Restart Claude Desktop**
+
+3. **Start Creating Charts!**
+   
+   Try asking Claude:
+   ```
+   "Create a bar chart showing sales data: Q1: $50k, Q2: $75k, Q3: $60k, Q4: $90k"
+   ```
+
+### Using with Cursor
+
+Add to your Cursor settings or workspace configuration:
+```json
+{
+  "mcp.servers": {
+    "chartjs": {
+      "command": "npx",
+      "args": ["-y", "@ax-crew/chartjs-mcp-server"]
+    }
+  }
+}
+```
+
+### Alternative: Install from Source
+
+If you prefer to install from source or want to contribute:
+
+1. **Clone and Build**
+   ```bash
+   git clone https://github.com/ax-crew/chartjs-mcp-server.git
+   cd chartjs-mcp-server
+   npm install && npm run build
+   ```
+
+2. **Configure with Local Path**
    
    ```json
    {
@@ -118,61 +156,6 @@ Here's what you can create with just a simple request:
    ```
    
    Replace `/full/path/to/chartjs-mcp-server` with the actual path where you cloned the repository.
-
-3. **Restart Claude Desktop**
-
-4. **Start Creating Charts!**
-   
-   Try asking Claude:
-   ```
-   "Create a bar chart showing sales data: Q1: $50k, Q2: $75k, Q3: $60k, Q4: $90k"
-   ```
-
-### Using with Cursor
-
-1. **Install the Server** (same as above)
-   ```bash
-   git clone https://github.com/ax-crew/chartjs-mcp-server.git
-   cd chartjs-mcp-server
-   npm install && npm run build
-   ```
-
-2. **Configure Cursor**
-   
-   Add to your Cursor settings or workspace configuration:
-   ```json
-   {
-     "mcp.servers": {
-       "chartjs": {
-         "command": "node",
-         "args": ["/full/path/to/chartjs-mcp-server/dist/index.js"]
-       }
-     }
-   }
-   ```
-
-3. **Use in Your Code**
-   
-   Ask Cursor to generate charts directly in your projects!
-
-### Future NPM Installation
-
-Once published to npm, installation will be simpler:
-
-```bash
-# Future installation (not yet available)
-npm install -g @ax-crew/chartjs-mcp-server
-
-# Then use in config:
-{
-  "mcpServers": {
-    "chartjs": {
-      "command": "npx",
-      "args": ["-y", "@ax-crew/chartjs-mcp-server"]
-    }
-  }
-}
-```
 
 ---
 
