@@ -3,7 +3,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { generateChart } from './chart-generator';
+import { generateChart } from './chart-generator.js';
 
 // Create MCP server instance
 const server = new McpServer({

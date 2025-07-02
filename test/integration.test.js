@@ -148,7 +148,7 @@ describe('Chart.js MCP Server - Integration Tests', () => {
         // Check for text response
         const textContent = result.content.find(item => item.type === 'text');
         assert(textContent, 'Should have text content');
-        assert(textContent.text.includes('output.png'), 'Should mention output file');
+        assert(textContent.text.includes('Chart generated successfully'), 'Should mention successful generation');
         
         // Check for image response
         const imageContent = result.content.find(item => item.type === 'image');
@@ -156,9 +156,13 @@ describe('Chart.js MCP Server - Integration Tests', () => {
         assert(imageContent.data, 'Should have image data');
         assert(imageContent.mimeType === 'image/png', 'Should be PNG format');
         
-        // Verify file was created
-        const fileExists = await checkOutputFile('output.png');
-        assert(fileExists, 'Output file should exist');
+        // Verify image data is valid PNG (no file checking needed)
+        const imageBuffer = Buffer.from(imageContent.data, 'base64');
+        assert(imageBuffer.length > 8, 'Image data should have content');
+        assert(imageBuffer[0] === 0x89, 'Should start with PNG signature');
+        assert(imageBuffer[1] === 0x50, 'Should have PNG signature');
+        assert(imageBuffer[2] === 0x4E, 'Should have PNG signature');
+        assert(imageBuffer[3] === 0x47, 'Should have PNG signature');
         
       } finally {
         await transport.close();
@@ -184,10 +188,11 @@ describe('Chart.js MCP Server - Integration Tests', () => {
           
           const textContent = result.content.find(item => item.type === 'text');
           assert(textContent, 'Should have text content');
-          assert(textContent.text.includes('output.png'), 'Should mention output file');
+          assert(textContent.text.includes('Chart generated successfully'), 'Should mention successful generation');
           
-          const fileExists = await checkOutputFile('output.png');
-          assert(fileExists, 'Output file should exist');
+          const imageContent = result.content.find(item => item.type === 'image');
+          assert(imageContent, 'Should have image content');
+          assert(imageContent.data, 'Should have image data');
         }
         
       } finally {
@@ -249,12 +254,11 @@ describe('Chart.js MCP Server - Integration Tests', () => {
             
             const textContent = result.content.find(item => item.type === 'text');
             assert(textContent, `Should have text content for ${chartType} chart`);
+            assert(textContent.text.includes('Chart generated successfully'), `Should mention successful generation for ${chartType} chart`);
             
             const imageContent = result.content.find(item => item.type === 'image');
             assert(imageContent, `Should have image content for ${chartType} chart`);
-            
-            const fileExists = await checkOutputFile('output.png');
-            assert(fileExists, `Output file should exist for ${chartType} chart`);
+            assert(imageContent.data, `Should have image data for ${chartType} chart`);
           }
           
         } finally {
@@ -336,8 +340,13 @@ describe('Chart.js MCP Server - Integration Tests', () => {
         assert(result.content, 'Should return content');
         assert(milliseconds < 10000, `Chart generation should complete within 10 seconds via MCP, took ${milliseconds}ms`);
         
-        const fileExists = await checkOutputFile('output.png');
-        assert(fileExists, 'Output file should exist');
+        const textContent = result.content.find(item => item.type === 'text');
+        assert(textContent, 'Should have text content');
+        assert(textContent.text.includes('Chart generated successfully'), 'Should mention successful generation');
+        
+        const imageContent = result.content.find(item => item.type === 'image');
+        assert(imageContent, 'Should have image content');
+        assert(imageContent.data, 'Should have image data');
         
       } finally {
         await transport.close();
