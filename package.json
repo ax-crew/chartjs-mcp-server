@@ -1,6 +1,5 @@
 {
   "name": "chartjs-mcp-server",
-  "type": "module",
   "description": "A Model Context Protocol server for generating beautiful charts using Chart.js v4. Perfect for Claude Desktop, Cursor, and other MCP clients.",
   "version": "1.0.2",
   "main": "dist/index.js",
@@ -17,8 +16,7 @@
     "watch": "nodemon --exec ts-node src/index.ts",
     "test": "node --test test/chart-server.test.js",
     "test:watch": "node --test --watch test/chart-server.test.js",
-    "test:integration": "./test-charts.sh",
-    "test:single": "./test-single.sh",
+    "test:integration": "node --test test/integration.test.js",
     "test:tools": "npx @modelcontextprotocol/inspector --cli node dist/index.js --method tools/list",
     "test:all": "npm run test && npm run test:integration",
     "prepublishOnly": "npm run build && npm test",
