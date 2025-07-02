@@ -1,6 +1,6 @@
 {
   "dxt_version": "0.1",
-  "name": "chartjs-mcp-server",
+  "name": "@ax-crew/chartjs-mcp-server",
   "display_name": "Chart.js MCP Server",
   "version": "1.0.1",
   "description": "Generate beautiful charts using Chart.js v4 - perfect for data visualization in Claude Desktop",

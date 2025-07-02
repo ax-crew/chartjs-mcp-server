@@ -161,13 +161,14 @@ Once published to npm, installation will be simpler:
 
 ```bash
 # Future installation (not yet available)
-npm install -g chartjs-mcp-server
+npm install -g @ax-crew/chartjs-mcp-server
 
 # Then use in config:
 {
   "mcpServers": {
     "chartjs": {
-      "command": "chartjs-mcp-server"
+      "command": "npx",
+      "args": ["-y", "@ax-crew/chartjs-mcp-server"]
     }
   }
 }
