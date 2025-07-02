@@ -21,7 +21,11 @@
     "test:single": "./test-single.sh",
     "test:tools": "npx @modelcontextprotocol/inspector --cli node dist/index.js --method tools/list",
     "test:all": "npm run test && npm run test:integration",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build && npm test",
+    "release:patch": "npm run test:all && npm version patch && npm publish && git push && git push --tags",
+    "release:minor": "npm run test:all && npm version minor && npm publish && git push && git push --tags",
+    "release:major": "npm run test:all && npm version major && npm publish && git push && git push --tags",
+    "release": "npm run release:patch"
   },
   "keywords": [
     "mcp",

@@ -58,8 +58,5 @@ temp/
 # TypeScript cache
 *.tsbuildinfo
 
-# Generated chart images (if any)
-charts/
-*.jpg
-*.jpeg
-*.gif
+# Release
+.npmrc
