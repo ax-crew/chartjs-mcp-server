@@ -9,6 +9,9 @@ import { generateChart } from './chart-generator.js';
 const server = new McpServer({
   name: "@ax-crew/chartjs-mcp-server",
   version: "1.0.0",
+  capabilities: {
+    tools: {},
+  },
 });
 
 // Register the chart generation tool
@@ -37,8 +40,6 @@ server.registerTool(
     const result = await generateChart(chartConfig);
 
     if (result.success) {
-      console.log('Chart successfully generated');
-
       return {
         content: [
           { type: "text", text: result.message },
@@ -50,7 +51,6 @@ server.registerTool(
         ]
       };
     } else {
-      console.error('Chart generation error:', result.error);
       
       return {
         content: [
@@ -66,13 +66,11 @@ server.registerTool(
 
 // Main function to start the server
 async function main() {
-  console.log("Starting Chart.js MCP Server...");
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.log("Chart.js MCP Server running on stdio");
 }
 
 main().catch((error) => {
-  console.error("Fatal error in main():", error);
+  process.stderr.write(`Fatal error in main(): ${error}\n`);
   process.exit(1);
 });
