@@ -2,8 +2,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { Chart, registerables } from 'chart.js';
-import { createCanvas } from 'canvas';
+import { generateChart } from '../dist/chart-generator.js';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,55 +11,24 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.join(__dirname, '..');
 const examplesDir = path.join(projectRoot, 'examples');
 
-// Register Chart.js components
-Chart.register(...registerables);
-
-// Extract the core chart generation logic from the MCP server
-async function generateChart(chartConfig, outputFilename = 'chart.png') {
-  try {
-    const { type, data, options, ...additionalConfig } = chartConfig;
-    const width = 800;
-    const height = 600;
-
-    const canvas = createCanvas(width, height);
-    const ctx = canvas.getContext('2d');
-
-    // Validate basic required structure
-    if (!data || !data.datasets || !Array.isArray(data.datasets)) {
-      throw new Error('Invalid chart configuration: data.datasets is required and must be an array');
-    }
-
-    if (data.datasets.length === 0) {
-      throw new Error('Invalid chart configuration: at least one dataset is required');
-    }
-
-    // Construct the full Chart.js configuration
-    const config = { 
-      type, 
-      data, 
-      options,
-      ...additionalConfig
-    };
-
-    // Create the chart - Chart.js will handle detailed validation
-    const chart = new Chart(ctx, config);
-
+// Test wrapper that uses the shared chart generation logic and saves to examples
+async function generateChartForTest(chartConfig, outputFilename = 'chart.png') {
+  // Use the actual source code for chart generation
+  const result = await generateChart(chartConfig);
+  
+  if (result.success) {
+    // For tests, we save to examples folder for documentation
     const outputPath = path.join(examplesDir, outputFilename);
-    const buffer = canvas.toBuffer('image/png');
-    await fs.writeFile(outputPath, buffer);
-
+    await fs.writeFile(outputPath, result.buffer);
+    
     return {
       success: true,
       outputPath,
-      buffer,
-      message: `Chart saved to ${outputPath}`
+      buffer: result.buffer,
+      message: result.message
     };
-  } catch (error) {
-    return {
-      success: false,
-      error: error.message,
-      message: `Error generating chart: ${error.message}`
-    };
+  } else {
+    return result;
   }
 }
 
@@ -179,13 +147,12 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         // Load example config or use fallback
         const config = await loadChartConfig(chartType, fallbackConfigs[chartType]);
         
-        const result = await generateChart(config, outputFilename);
+        const result = await generateChartForTest(config, outputFilename);
         
         // Check that generation was successful
         assert(result.success, `Chart generation should succeed: ${result.message}`);
         assert(result.buffer, 'Should have buffer data');
         assert(result.outputPath, 'Should have output path');
-        assert(result.message.includes(outputFilename), 'Should mention correct output file');
         
         // Check that output file was created and has content
         const fileExists = await checkOutputFile(outputFilename);
@@ -220,7 +187,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         }
       };
       
-      const result = await generateChart(invalidConfig, outputFilename);
+      const result = await generateChartForTest(invalidConfig, outputFilename);
       
       // Should get an error response
       assert(!result.success, 'Should fail for invalid chart type');
@@ -243,7 +210,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         }
       };
       
-      const result = await generateChart(invalidConfig, outputFilename);
+      const result = await generateChartForTest(invalidConfig, outputFilename);
       
       // Should get an error response
       assert(!result.success, 'Should fail for missing datasets');
@@ -266,7 +233,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         }
       };
       
-      const result = await generateChart(invalidConfig, outputFilename);
+      const result = await generateChartForTest(invalidConfig, outputFilename);
       
       // Should get an error response
       assert(!result.success, 'Should fail for empty datasets');
@@ -286,7 +253,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         data: null
       };
       
-      const result = await generateChart(invalidConfig, outputFilename);
+      const result = await generateChartForTest(invalidConfig, outputFilename);
       
       // Should get an error response
       assert(!result.success, 'Should fail for null data');
@@ -304,7 +271,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
       const outputFilename = 'scatter-test.png';
       await cleanupOutputFile(outputFilename);
       
-      const result = await generateChart(fallbackConfigs.scatter, outputFilename);
+      const result = await generateChartForTest(fallbackConfigs.scatter, outputFilename);
       
       assert(result.success, `Scatter chart should succeed: ${result.message}`);
       
@@ -319,7 +286,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
       const outputFilename = 'bubble-test.png';
       await cleanupOutputFile(outputFilename);
       
-      const result = await generateChart(fallbackConfigs.bubble, outputFilename);
+      const result = await generateChartForTest(fallbackConfigs.bubble, outputFilename);
       
       assert(result.success, `Bubble chart should succeed: ${result.message}`);
       
@@ -348,7 +315,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         }
       };
       
-      const result = await generateChart(configWithoutLabels, outputFilename);
+      const result = await generateChartForTest(configWithoutLabels, outputFilename);
       
       assert(result.success, `Pie chart without labels should succeed: ${result.message}`);
       
@@ -373,7 +340,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         }
       };
       
-      const result = await generateChart(invalidConfig, outputFilename);
+      const result = await generateChartForTest(invalidConfig, outputFilename);
       
       // Chart.js might handle this gracefully or throw an error
       // Let's check that it either succeeds or fails appropriately
@@ -446,7 +413,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         }
       };
       
-      const result = await generateChart(complexConfig, outputFilename);
+      const result = await generateChartForTest(complexConfig, outputFilename);
       
       assert(result.success, `Complex chart should succeed: ${result.message}`);
       
@@ -488,7 +455,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         }
       };
       
-      const result = await generateChart(multiDatasetConfig, outputFilename);
+      const result = await generateChartForTest(multiDatasetConfig, outputFilename);
       
       assert(result.success, `Multi-dataset chart should succeed: ${result.message}`);
       
@@ -520,7 +487,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         customProperty: 'test'
       };
       
-      const result = await generateChart(configWithAdditionalProps, outputFilename);
+      const result = await generateChartForTest(configWithAdditionalProps, outputFilename);
       
       assert(result.success, `Chart with additional properties should succeed: ${result.message}`);
       
@@ -539,7 +506,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
       await cleanupOutputFile(outputFilename);
       
       const config = await loadChartConfig('bar', fallbackConfigs.bar);
-      const result = await generateChart(config, outputFilename);
+      const result = await generateChartForTest(config, outputFilename);
       
       assert(result.success, 'Chart generation should succeed');
       
@@ -572,7 +539,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
         
         const config = await loadChartConfig(chartType, null);
         if (config) {
-          const result = await generateChart(config, outputFilename);
+          const result = await generateChartForTest(config, outputFilename);
           
           assert(result.success, `Example ${chartType} chart should succeed: ${result.message}`);
           
@@ -596,7 +563,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
       
       const startTime = process.hrtime();
       const config = await loadChartConfig('bar', fallbackConfigs.bar);
-      const result = await generateChart(config, outputFilename);
+      const result = await generateChartForTest(config, outputFilename);
       const [seconds, nanoseconds] = process.hrtime(startTime);
       const milliseconds = seconds * 1000 + nanoseconds / 1000000;
       
@@ -626,7 +593,7 @@ describe('Chart.js MCP Server - Core Functionality Tests', () => {
       };
       
       const startTime = process.hrtime();
-      const result = await generateChart(largeDataConfig, outputFilename);
+      const result = await generateChartForTest(largeDataConfig, outputFilename);
       const [seconds, nanoseconds] = process.hrtime(startTime);
       const milliseconds = seconds * 1000 + nanoseconds / 1000000;
       

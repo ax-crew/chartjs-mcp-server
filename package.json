@@ -1,7 +1,7 @@
 {
   "name": "@ax-crew/chartjs-mcp-server",
   "description": "A Model Context Protocol server for generating beautiful charts using Chart.js v4. Perfect for Claude Desktop, Cursor, and other MCP clients.",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
