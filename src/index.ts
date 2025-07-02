@@ -71,6 +71,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  process.stderr.write(`Fatal error in main(): ${error}\n`);
+  console.error("Fatal error in main():", error);
   process.exit(1);
 });
