@@ -1,0 +1,834 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.chartjs.org/schemas/v4/chart-config.json",
+  "title": "Chart.js v4 Configuration",
+  "description": "JSON Schema for the Chart.js configuration object used in `new Chart(ctx, config)`.",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/chartTypes/bar" },
+    { "$ref": "#/$defs/chartTypes/line" },
+    { "$ref": "#/$defs/chartTypes/scatter" },
+    { "$ref": "#/$defs/chartTypes/bubble" },
+    { "$ref": "#/$defs/chartTypes/pie" },
+    { "$ref": "#/$defs/chartTypes/doughnut" },
+    { "$ref": "#/$defs/chartTypes/polarArea" },
+    { "$ref": "#/$defs/chartTypes/radar" }
+  ],
+  "$defs": {
+    "primitives": {
+      "color": {
+        "type": "string",
+        "description": "Color in CSS notation (hex, rgb, rgba, hsl, hsla, or named color)."
+      },
+      "scriptableColor": {
+        "$ref": "#/$defs/primitives/color"
+      },
+      "scriptableAndArrayColor": {
+        "oneOf": [
+          { "$ref": "#/$defs/primitives/color" },
+          { "type": "array", "items": { "$ref": "#/$defs/primitives/color" } }
+        ]
+      },
+      "scriptableNumber": {
+        "type": "number"
+      },
+      "scriptableAndArrayNumber": {
+        "oneOf": [
+          { "type": "number" },
+          { "type": "array", "items": { "type": "number" } }
+        ]
+      },
+      "scriptableString": {
+        "type": "string"
+      },
+      "scriptableBoolean": {
+        "type": "boolean"
+      },
+      "point": {
+        "type": "object",
+        "properties": {
+          "x": { "type": "number" },
+          "y": { "type": "number" }
+        }
+      },
+      "pointStyle": {
+        "oneOf": [
+          {
+            "enum": ["circle", "cross", "crossRot", "dash", "line", "rect", "rectRounded", "rectRot", "star", "triangle", false]
+          },
+          {
+            "type": "string",
+            "description": "HTMLImageElement or HTMLCanvasElement, represented as a data URI string."
+          }
+        ]
+      },
+      "padding": {
+        "oneOf": [
+          { "type": "number" },
+          {
+            "type": "object",
+            "properties": {
+              "top": { "type": "number" },
+              "right": { "type": "number" },
+              "bottom": { "type": "number" },
+              "left": { "type": "number" }
+            }
+          }
+        ]
+      },
+      "chartArea": {
+        "type": "object",
+        "properties": {
+          "top": { "type": "number" },
+          "right": { "type": "number" },
+          "bottom": { "type": "number" },
+          "left": { "type": "number" }
+        }
+      },
+      "fontSpec": {
+        "type": "object",
+        "properties": {
+          "family": { "type": "string", "default": "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif" },
+          "size": { "type": "number", "default": 12 },
+          "style": { "enum": ["normal", "italic", "oblique", "initial", "inherit"], "default": "normal" },
+          "weight": {
+            "oneOf": [
+              { "enum": ["normal", "bold", "lighter", "bolder", null] },
+              { "type": "number" }
+            ]
+          },
+          "lineHeight": { "oneOf": [{ "type": "number" }, { "type": "string" }], "default": 1.2 }
+        }
+      },
+      "borderRadius": {
+        "oneOf": [
+          { "type": "number" },
+          {
+            "type": "object",
+            "properties": {
+              "topLeft": { "type": "number" },
+              "topRight": { "type": "number" },
+              "bottomLeft": { "type": "number" },
+              "bottomRight": { "type": "number" }
+            }
+          }
+        ]
+      }
+    },
+    "options": {
+      "common": {
+        "parsingOptions": {
+          "type": "object",
+          "properties": {
+            "parsing": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": { "type": "string" }
+                },
+                { "type": "boolean", "const": false }
+              ],
+              "description": "How to parse the dataset. If false, data must be provided in internal format."
+            },
+            "normalized": {
+              "type": "boolean",
+              "description": "Set to true if data is pre-sorted and normalized.",
+              "default": false
+            }
+          }
+        },
+        "animation": {
+          "oneOf": [
+            { "type": "boolean", "const": false },
+            {
+              "type": "object",
+              "properties": {
+                "duration": { "$ref": "#/$defs/primitives/scriptableNumber", "default": 1000 },
+                "easing": { "type": "string", "default": "easeOutQuart" },
+                "delay": { "$ref": "#/$defs/primitives/scriptableNumber", "default": 0 },
+                "loop": { "$ref": "#/$defs/primitives/scriptableBoolean", "default": false },
+                "onProgress": { "type": "object", "description": "Cannot be represented in JSON." },
+                "onComplete": { "type": "object", "description": "Cannot be represented in JSON." }
+              }
+            }
+          ]
+        },
+        "interaction": {
+          "type": "object",
+          "properties": {
+            "mode": { "enum": ["point", "nearest", "index", "dataset", "x", "y"], "default": "nearest" },
+            "intersect": { "type": "boolean", "default": true },
+            "axis": { "enum": ["x", "y", "xy", "r"] },
+            "includeInvisible": { "type": "boolean", "default": false }
+          }
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "autoPadding": { "type": "boolean" },
+            "padding": { "$ref": "#/$defs/primitives/padding" }
+          }
+        },
+        "core": {
+          "type": "object",
+          "properties": {
+            "responsive": { "type": "boolean", "default": true },
+            "maintainAspectRatio": { "type": "boolean", "default": true },
+            "aspectRatio": { "type": "number", "default": 2 },
+            "resizeDelay": { "type": "number", "default": 0 },
+            "devicePixelRatio": { "type": "number" },
+            "locale": { "type": "string" },
+            "indexAxis": { "enum": ["x", "y"], "default": "x" },
+            "clip": {
+              "oneOf": [
+                { "type": "number" },
+                { "$ref": "#/$defs/primitives/chartArea" },
+                { "type": "boolean", "const": false }
+              ]
+            },
+            "interaction": { "$ref": "#/$defs/options/common/interaction" },
+            "hover": { "$ref": "#/$defs/options/common/interaction" },
+            "events": { "type": "array", "items": { "type": "string" } },
+            "layout": { "$ref": "#/$defs/options/common/layout" },
+            "animation": { "$ref": "#/$defs/options/common/animation" }
+          },
+          "allOf": [{ "$ref": "#/$defs/options/common/parsingOptions" }]
+        }
+      },
+      "elements": {
+        "common": {
+          "type": "object",
+          "properties": {
+            "backgroundColor": { "$ref": "#/$defs/primitives/color" },
+            "borderColor": { "$ref": "#/$defs/primitives/color" },
+            "borderWidth": { "type": "number" }
+          }
+        },
+        "commonHover": {
+          "type": "object",
+          "properties": {
+            "hoverBackgroundColor": { "$ref": "#/$defs/primitives/color" },
+            "hoverBorderColor": { "$ref": "#/$defs/primitives/color" },
+            "hoverBorderWidth": { "type": "number" }
+          }
+        },
+        "arc": {
+          "allOf": [
+            { "$ref": "#/$defs/options/elements/common" },
+            { "$ref": "#/$defs/options/elements/commonHover" }
+          ],
+          "properties": {
+            "borderAlign": { "enum": ["center", "inner"] },
+            "borderDash": { "type": "array", "items": { "type": "number" } },
+            "borderDashOffset": { "type": "number" },
+            "borderJoinStyle": { "enum": ["round", "bevel", "miter"] },
+            "borderRadius": { "$ref": "#/$defs/primitives/borderRadius" },
+            "offset": { "type": "number" },
+            "spacing": { "type": "number" },
+            "hoverOffset": { "type": "number" }
+          }
+        },
+        "line": {
+          "allOf": [
+            { "$ref": "#/$defs/options/elements/common" },
+            { "$ref": "#/$defs/options/elements/commonHover" }
+          ],
+          "properties": {
+            "tension": { "type": "number", "default": 0 },
+            "borderCapStyle": { "enum": ["butt", "round", "square"], "default": "butt" },
+            "borderDash": { "type": "array", "items": { "type": "number" }, "default": [] },
+            "borderDashOffset": { "type": "number", "default": 0 },
+            "borderJoinStyle": { "enum": ["round", "bevel", "miter"], "default": "miter" },
+            "capBezierPoints": { "type": "boolean", "default": true },
+            "cubicInterpolationMode": { "enum": ["default", "monotone"], "default": "default" },
+            "fill": {
+              "oneOf": [
+                { "type": "boolean" },
+                { "type": "string" },
+                { "type": "number" }
+              ]
+            },
+            "stepped": { "oneOf": [{ "type": "boolean" }, { "type": "string" }], "default": false }
+          }
+        },
+        "point": {
+          "allOf": [
+            { "$ref": "#/$defs/options/elements/common" },
+            { "$ref": "#/$defs/options/elements/commonHover" }
+          ],
+          "properties": {
+            "radius": { "type": "number", "default": 3 },
+            "hitRadius": { "type": "number", "default": 1 },
+            "pointStyle": { "$ref": "#/$defs/primitives/pointStyle", "default": "circle" },
+            "rotation": { "type": "number", "default": 0 },
+            "hoverRadius": { "type": "number", "default": 4 }
+          }
+        },
+        "bar": {
+          "allOf": [
+            { "$ref": "#/$defs/options/elements/common" },
+            { "$ref": "#/$defs/options/elements/commonHover" }
+          ],
+          "properties": {
+            "base": { "type": "number" },
+            "borderSkipped": { "oneOf": [{ "type": "boolean" }, { "enum": ["start", "end", "left", "right", "bottom", "top", "middle"] }], "default": "start" },
+            "borderRadius": { "$ref": "#/$defs/primitives/borderRadius", "default": 0 },
+            "inflateAmount": { "oneOf": [{ "type": "number" }, { "enum": ["auto"] }], "default": "auto" },
+            "borderWidth": {
+              "oneOf": [
+                { "type": "number" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "top": { "type": "number" },
+                    "right": { "type": "number" },
+                    "bottom": { "type": "number" },
+                    "left": { "type": "number" }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "plugins": {
+        "legend": {
+          "type": "object",
+          "properties": {
+            "display": { "type": "boolean", "default": true },
+            "position": { "enum": ["top", "left", "bottom", "right", "chartArea"], "default": "top" },
+            "align": { "enum": ["start", "center", "end"], "default": "center" },
+            "maxHeight": { "type": "number" },
+            "maxWidth": { "type": "number" },
+            "fullSize": { "type": "boolean" },
+            "reverse": { "type": "boolean", "default": false },
+            "rtl": { "type": "boolean" },
+            "textDirection": { "type": "string" },
+            "labels": {
+              "type": "object",
+              "properties": {
+                "boxWidth": { "type": "number", "default": 40 },
+                "boxHeight": { "type": "number" },
+                "color": { "$ref": "#/$defs/primitives/color" },
+                "font": { "$ref": "#/$defs/primitives/fontSpec" },
+                "padding": { "type": "number", "default": 10 },
+                "usePointStyle": { "type": "boolean", "default": false },
+                "pointStyle": { "$ref": "#/$defs/primitives/pointStyle" },
+                "textAlign": { "enum": ["left", "right", "center", "start", "end"] }
+              }
+            },
+            "title": {
+              "type": "object",
+              "properties": {
+                "display": { "type": "boolean", "default": false },
+                "color": { "$ref": "#/$defs/primitives/color" },
+                "font": { "$ref": "#/$defs/primitives/fontSpec" },
+                "position": { "enum": ["center", "start", "end"] },
+                "padding": { "oneOf": [{ "type": "number" }, { "$ref": "#/$defs/primitives/chartArea" }] },
+                "text": { "type": "string" }
+              }
+            }
+          }
+        },
+        "title": {
+          "type": "object",
+          "properties": {
+            "display": { "type": "boolean", "default": false },
+            "position": { "enum": ["top", "left", "bottom", "right"], "default": "top" },
+            "align": { "enum": ["start", "center", "end"], "default": "center" },
+            "font": { "$ref": "#/$defs/primitives/fontSpec" },
+            "padding": { "oneOf": [{ "type": "number" }, { "type": "object", "properties": { "top": { "type": "number" }, "bottom": { "type": "number" } } }] },
+            "text": { "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
+            "color": { "$ref": "#/$defs/primitives/color" }
+          }
+        },
+        "tooltip": {
+          "type": "object",
+          "properties": {
+            "enabled": { "$ref": "#/$defs/primitives/scriptableBoolean", "default": true },
+            "position": { "enum": ["average", "nearest"], "default": "average" },
+            "backgroundColor": { "$ref": "#/$defs/primitives/scriptableColor", "default": "rgba(0, 0, 0, 0.8)" },
+            "titleFont": { "$ref": "#/$defs/primitives/fontSpec" },
+            "titleColor": { "$ref": "#/$defs/primitives/scriptableColor" },
+            "titleAlign": { "enum": ["left", "right", "center", "start", "end"] },
+            "titleSpacing": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "titleMarginBottom": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "bodyFont": { "$ref": "#/$defs/primitives/fontSpec" },
+            "bodyColor": { "$ref": "#/$defs/primitives/scriptableColor" },
+            "bodyAlign": { "enum": ["left", "right", "center", "start", "end"] },
+            "bodySpacing": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "footerFont": { "$ref": "#/$defs/primitives/fontSpec" },
+            "footerColor": { "$ref": "#/$defs/primitives/scriptableColor" },
+            "footerAlign": { "enum": ["left", "right", "center", "start", "end"] },
+            "footerSpacing": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "footerMarginTop": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "padding": { "$ref": "#/$defs/primitives/padding" },
+            "caretPadding": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "caretSize": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "cornerRadius": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "multiKeyBackground": { "$ref": "#/$defs/primitives/scriptableColor" },
+            "displayColors": { "type": "boolean", "default": true },
+            "boxWidth": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "boxHeight": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "boxPadding": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "usePointStyle": { "$ref": "#/$defs/primitives/scriptableBoolean" },
+            "borderColor": { "$ref": "#/$defs/primitives/scriptableColor" },
+            "borderWidth": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "rtl": { "$ref": "#/$defs/primitives/scriptableBoolean" },
+            "textDirection": { "$ref": "#/$defs/primitives/scriptableString" }
+          },
+          "allOf": [{ "$ref": "#/$defs/options/common/interaction" }]
+        }
+      },
+      "scales": {
+        "tick": {
+          "type": "object",
+          "properties": {
+            "display": { "type": "boolean", "default": true },
+            "color": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+            "font": { "$ref": "#/$defs/primitives/fontSpec" },
+            "padding": { "type": "number" },
+            "showLabelBackdrop": { "$ref": "#/$defs/primitives/scriptableBoolean" },
+            "backdropColor": { "$ref": "#/$defs/primitives/scriptableColor" },
+            "backdropPadding": { "oneOf": [{ "type": "number" }, { "$ref": "#/$defs/primitives/chartArea" }] }
+          }
+        },
+        "grid": {
+          "type": "object",
+          "properties": {
+            "display": { "type": "boolean", "default": true },
+            "circular": { "type": "boolean", "default": false },
+            "color": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+            "lineWidth": { "$ref": "#/$defs/primitives/scriptableAndArrayNumber" },
+            "drawOnChartArea": { "type": "boolean", "default": true },
+            "drawTicks": { "type": "boolean", "default": true },
+            "tickLength": { "type": "number" },
+            "offset": { "type": "boolean", "default": false }
+          }
+        },
+        "angleLines": {
+          "type": "object",
+          "properties": {
+            "display": { "type": "boolean", "default": true },
+            "color": { "$ref": "#/$defs/primitives/scriptableColor" },
+            "lineWidth": { "$ref": "#/$defs/primitives/scriptableNumber" },
+            "borderDash": { "type": "array", "items": { "type": "number" } },
+            "borderDashOffset": { "type": "number" }
+          }
+        },
+        "pointLabels": {
+          "type": "object",
+          "properties": {
+            "display": { "oneOf": [{ "type": "boolean" }, { "enum": ["auto"] }], "default": true },
+            "color": { "$ref": "#/$defs/primitives/scriptableColor" },
+            "font": { "$ref": "#/$defs/primitives/fontSpec" },
+            "backdropColor": { "$ref": "#/$defs/primitives/scriptableColor" },
+            "backdropPadding": { "oneOf": [{ "type": "number" }, { "$ref": "#/$defs/primitives/chartArea" }] },
+            "borderRadius": { "$ref": "#/$defs/primitives/borderRadius" },
+            "padding": { "type": "number" },
+            "centerPointLabels": { "type": "boolean" }
+          }
+        },
+        "coreScale": {
+          "type": "object",
+          "properties": {
+            "display": { "oneOf": [{ "type": "boolean" }, { "enum": ["auto"] }], "default": true },
+            "alignToPixels": { "type": "boolean" },
+            "reverse": { "type": "boolean", "default": false },
+            "weight": { "type": "number" },
+            "min": { "description": "User defined minimum value for the scale." },
+            "max": { "description": "User defined maximum value for the scale." },
+            "suggestedMin": { "description": "Adjustment used when calculating the minimum data value." },
+            "suggestedMax": { "description": "Adjustment used when calculating the maximum data value." }
+          }
+        },
+        "cartesianScale": {
+          "allOf": [{ "$ref": "#/$defs/options/scales/coreScale" }],
+          "properties": {
+            "axis": { "enum": ["x", "y"] },
+            "bounds": { "enum": ["ticks", "data"], "default": "ticks" },
+            "position": { "oneOf": [{ "enum": ["left", "top", "right", "bottom", "center"] }, { "type": "object" }] },
+            "stack": { "type": "string" },
+            "stackWeight": { "type": "number" },
+            "offset": { "type": "boolean", "default": false },
+            "grid": { "$ref": "#/$defs/options/scales/grid" },
+            "title": { "$ref": "#/$defs/options/plugins/title" },
+            "ticks": { "$ref": "#/$defs/options/scales/tick" }
+          }
+        },
+        "category": {
+          "allOf": [{ "$ref": "#/$defs/options/scales/cartesianScale" }],
+          "properties": {
+            "type": { "const": "category" },
+            "labels": { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] } }
+          },
+          "required": ["type"]
+        },
+        "linear": {
+          "allOf": [{ "$ref": "#/$defs/options/scales/cartesianScale" }],
+          "properties": {
+            "type": { "const": "linear" },
+            "beginAtZero": { "type": "boolean", "default": true },
+            "grace": { "oneOf": [{ "type": "string" }, { "type": "number" }] },
+            "ticks": {
+              "allOf": [{ "$ref": "#/$defs/options/scales/tick" }],
+              "properties": {
+                "stepSize": { "type": "number" },
+                "count": { "type": "number" }
+              }
+            }
+          },
+          "required": ["type"]
+        },
+        "logarithmic": {
+          "allOf": [{ "$ref": "#/$defs/options/scales/cartesianScale" }],
+          "properties": {
+            "type": { "const": "logarithmic" }
+          },
+          "required": ["type"]
+        },
+        "time": {
+          "allOf": [{ "$ref": "#/$defs/options/scales/cartesianScale" }],
+          "properties": {
+            "type": { "const": "time" },
+            "adapters": { "type": "object" },
+            "time": {
+              "type": "object",
+              "properties": {
+                "displayFormats": { "type": "object" },
+                "isoWeekday": { "oneOf": [{ "type": "boolean" }, { "type": "number" }] },
+                "parser": { "oneOf": [{ "type": "string" }, { "type": "boolean", "const": false }] },
+                "round": { "oneOf": [{ "type": "string" }, { "type": "boolean", "const": false }] },
+                "tooltipFormat": { "type": "string" },
+                "unit": { "oneOf": [{ "type": "string" }, { "type": "boolean", "const": false }] },
+                "minUnit": { "type": "string" }
+              }
+            },
+            "ticks": {
+              "allOf": [{ "$ref": "#/$defs/options/scales/tick" }],
+              "properties": {
+                "source": { "enum": ["auto", "data", "labels"] }
+              }
+            }
+          },
+          "required": ["type"]
+        },
+        "timeseries": {
+          "allOf": [{ "$ref": "#/$defs/options/scales/time" }],
+          "properties": {
+            "type": { "const": "timeseries" }
+          },
+          "required": ["type"]
+        },
+        "radialLinear": {
+          "allOf": [{ "$ref": "#/$defs/options/scales/coreScale" }],
+          "properties": {
+            "type": { "const": "radialLinear" },
+            "animate": { "type": "boolean" },
+            "angleLines": { "$ref": "#/$defs/options/scales/angleLines" },
+            "beginAtZero": { "type": "boolean", "default": false },
+            "grid": { "$ref": "#/$defs/options/scales/grid" },
+            "pointLabels": { "$ref": "#/$defs/options/scales/pointLabels" },
+            "startAngle": { "type": "number" },
+            "ticks": {
+              "allOf": [{ "$ref": "#/$defs/options/scales/tick" }],
+              "properties": {
+                "stepSize": { "type": "number" },
+                "count": { "type": "number" }
+              }
+            }
+          },
+          "required": ["type"]
+        }
+      }
+    },
+    "data": {
+      "commonDataset": {
+        "type": "object",
+        "properties": {
+          "label": { "type": "string", "description": "The label for the dataset which appears in the legend and tooltips." },
+          "order": { "type": "number", "description": "The drawing order of the dataset." },
+          "stack": { "type": "string", "description": "The ID of the group to which this dataset belongs." },
+          "hidden": { "type": "boolean", "description": "If true, the dataset is hidden.", "default": false }
+        },
+        "allOf": [{ "$ref": "#/$defs/options/common/parsingOptions" }]
+      },
+      "pointData": {
+        "oneOf": [
+          { "$ref": "#/$defs/primitives/point" },
+          { "type": "number" },
+          { "type": "null" }
+        ]
+      },
+      "bubbleData": {
+        "allOf": [{ "$ref": "#/$defs/primitives/point" }],
+        "properties": {
+          "r": { "type": "number", "description": "Bubble radius in pixels." }
+        }
+      }
+    },
+    "chartTypes": {
+      "bar": {
+        "type": "object",
+        "properties": {
+          "type": { "const": "bar" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "labels": { "type": "array", "items": { "type": "string" } },
+              "datasets": {
+                "type": "array",
+                "items": {
+                  "allOf": [{ "$ref": "#/$defs/data/commonDataset" }],
+                  "properties": {
+                    "data": { "type": "array", "items": { "oneOf": [{ "type": "number" }, { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number" } }, { "type": "null" }] } },
+                    "backgroundColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "borderColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "borderWidth": { "$ref": "#/$defs/primitives/scriptableAndArrayNumber" },
+                    "hoverBackgroundColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "hoverBorderColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "hoverBorderWidth": { "$ref": "#/$defs/primitives/scriptableAndArrayNumber" },
+                    "barPercentage": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.9 },
+                    "categoryPercentage": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.8 },
+                    "barThickness": { "oneOf": [{ "type": "number" }, { "enum": ["flex"] }] },
+                    "maxBarThickness": { "type": "number" },
+                    "minBarLength": { "type": "number" },
+                    "xAxisID": { "type": "string" },
+                    "yAxisID": { "type": "string" }
+                  },
+                  "required": ["data"]
+                }
+              }
+            },
+            "required": ["datasets"]
+          },
+          "options": {
+            "allOf": [{ "$ref": "#/$defs/options/common/core" }],
+            "properties": {
+              "skipNull": { "type": "boolean" },
+              "elements": { "type": "object", "properties": { "bar": { "$ref": "#/$defs/options/elements/bar" } } },
+              "plugins": { "$ref": "#/$defs/options/plugins" },
+              "scales": { "type": "object", "additionalProperties": { "oneOf": [{ "$ref": "#/$defs/options/scales/category" }, { "$ref": "#/$defs/options/scales/linear" }, { "$ref": "#/$defs/options/scales/logarithmic" }, { "$ref": "#/$defs/options/scales/time" }, { "$ref": "#/$defs/options/scales/timeseries" }] } }
+            }
+          }
+        },
+        "required": ["type", "data"]
+      },
+      "line": {
+        "type": "object",
+        "properties": {
+          "type": { "const": "line" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "labels": { "type": "array", "items": { "type": "string" } },
+              "datasets": {
+                "type": "array",
+                "items": {
+                  "allOf": [{ "$ref": "#/$defs/data/commonDataset" }],
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/$defs/data/pointData" } },
+                    "backgroundColor": { "$ref": "#/$defs/primitives/scriptableColor" },
+                    "borderColor": { "$ref": "#/$defs/primitives/scriptableColor" },
+                    "borderWidth": { "$ref": "#/$defs/primitives/scriptableNumber" },
+                    "pointBackgroundColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "pointBorderColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "pointRadius": { "$ref": "#/$defs/primitives/scriptableAndArrayNumber" },
+                    "tension": { "type": "number" },
+                    "fill": { "oneOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }, { "type": "object" }] },
+                    "spanGaps": { "oneOf": [{ "type": "boolean" }, { "type": "number" }] },
+                    "showLine": { "type": "boolean", "default": true },
+                    "xAxisID": { "type": "string" },
+                    "yAxisID": { "type": "string" }
+                  },
+                  "required": ["data"]
+                }
+              }
+            },
+            "required": ["datasets"]
+          },
+          "options": {
+            "allOf": [{ "$ref": "#/$defs/options/common/core" }],
+            "properties": {
+              "showLine": { "type": "boolean", "default": true },
+              "spanGaps": { "oneOf": [{ "type": "boolean" }, { "type": "number" }] },
+              "elements": { "type": "object", "properties": { "line": { "$ref": "#/$defs/options/elements/line" }, "point": { "$ref": "#/$defs/options/elements/point" } } },
+              "plugins": { "$ref": "#/$defs/options/plugins" },
+              "scales": { "type": "object", "additionalProperties": { "oneOf": [{ "$ref": "#/$defs/options/scales/category" }, { "$ref": "#/$defs/options/scales/linear" }, { "$ref": "#/$defs/options/scales/logarithmic" }, { "$ref": "#/$defs/options/scales/time" }, { "$ref": "#/$defs/options/scales/timeseries" }] } }
+            }
+          }
+        },
+        "required": ["type", "data"]
+      },
+      "scatter": {
+        "type": "object",
+        "properties": {
+          "type": { "const": "scatter" },
+          "data": { "$ref": "#/$defs/chartTypes/line/properties/data" },
+          "options": { "$ref": "#/$defs/chartTypes/line/properties/options" }
+        },
+        "required": ["type", "data"]
+      },
+      "bubble": {
+        "type": "object",
+        "properties": {
+          "type": { "const": "bubble" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "datasets": {
+                "type": "array",
+                "items": {
+                  "allOf": [{ "$ref": "#/$defs/data/commonDataset" }],
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/$defs/data/bubbleData" } },
+                    "backgroundColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "borderColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "radius": { "$ref": "#/$defs/primitives/scriptableAndArrayNumber" }
+                  },
+                  "required": ["data"]
+                }
+              }
+            },
+            "required": ["datasets"]
+          },
+          "options": {
+            "allOf": [{ "$ref": "#/$defs/options/common/core" }],
+            "properties": {
+              "elements": { "type": "object", "properties": { "point": { "$ref": "#/$defs/options/elements/point" } } },
+              "plugins": { "$ref": "#/$defs/options/plugins" },
+              "scales": { "type": "object", "additionalProperties": { "oneOf": [{ "$ref": "#/$defs/options/scales/linear" }, { "$ref": "#/$defs/options/scales/logarithmic" }] } }
+            }
+          }
+        },
+        "required": ["type", "data"]
+      },
+      "pie": {
+        "type": "object",
+        "properties": {
+          "type": { "const": "pie" },
+          "data": { "$ref": "#/$defs/chartTypes/doughnut/properties/data" },
+          "options": {
+            "allOf": [{ "$ref": "#/$defs/chartTypes/doughnut/properties/options" }],
+            "properties": {
+              "cutout": { "oneOf": [{ "type": "number" }, { "type": "string" }], "default": 0, "description": "The portion of the chart that is cut out of the middle. 0 for pie charts." }
+            }
+          }
+        },
+        "required": ["type", "data"]
+      },
+      "doughnut": {
+        "type": "object",
+        "properties": {
+          "type": { "const": "doughnut" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "labels": { "type": "array", "items": { "type": "string" } },
+              "datasets": {
+                "type": "array",
+                "items": {
+                  "allOf": [{ "$ref": "#/$defs/data/commonDataset" }],
+                  "properties": {
+                    "data": { "type": "array", "items": { "type": "number" } },
+                    "backgroundColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "borderColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "borderWidth": { "$ref": "#/$defs/primitives/scriptableAndArrayNumber" },
+                    "circumference": { "type": "number", "default": 360 },
+                    "offset": { "oneOf": [{ "type": "number" }, { "type": "array", "items": { "type": "number" } }] },
+                    "rotation": { "type": "number", "default": 0 },
+                    "spacing": { "type": "number", "default": 0 },
+                    "weight": { "type": "number", "default": 1 }
+                  },
+                  "required": ["data"]
+                }
+              }
+            },
+            "required": ["datasets"]
+          },
+          "options": {
+            "allOf": [{ "$ref": "#/$defs/options/common/core" }],
+            "properties": {
+              "circumference": { "type": "number", "default": 360 },
+              "cutout": { "oneOf": [{ "type": "number" }, { "type": "string" }], "default": "50%", "description": "The portion of the chart that is cut out of the middle." },
+              "radius": { "oneOf": [{ "type": "number" }, { "type": "string" }], "default": "100%" },
+              "rotation": { "type": "number", "default": 0 },
+              "spacing": { "type": "number", "default": 0 },
+              "elements": { "type": "object", "properties": { "arc": { "$ref": "#/$defs/options/elements/arc" } } },
+              "plugins": { "$ref": "#/$defs/options/plugins" }
+            }
+          }
+        },
+        "required": ["type", "data"]
+      },
+      "polarArea": {
+        "type": "object",
+        "properties": {
+          "type": { "const": "polarArea" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "labels": { "type": "array", "items": { "type": "string" } },
+              "datasets": {
+                "type": "array",
+                "items": {
+                  "allOf": [{ "$ref": "#/$defs/data/commonDataset" }],
+                  "properties": {
+                    "data": { "type": "array", "items": { "type": "number" } },
+                    "backgroundColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "borderColor": { "$ref": "#/$defs/primitives/scriptableAndArrayColor" },
+                    "borderWidth": { "$ref": "#/$defs/primitives/scriptableAndArrayNumber" },
+                    "angle": { "type": "number" }
+                  },
+                  "required": ["data"]
+                }
+              }
+            },
+            "required": ["datasets"]
+          },
+          "options": {
+            "allOf": [{ "$ref": "#/$defs/options/common/core" }],
+            "properties": {
+              "startAngle": { "type": "number", "default": 0 },
+              "elements": { "type": "object", "properties": { "arc": { "$ref": "#/$defs/options/elements/arc" } } },
+              "plugins": { "$ref": "#/$defs/options/plugins" },
+              "scales": { "type": "object", "additionalProperties": { "$ref": "#/$defs/options/scales/radialLinear" } }
+            }
+          }
+        },
+        "required": ["type", "data"]
+      },
+      "radar": {
+        "type": "object",
+        "properties": {
+          "type": { "const": "radar" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "labels": { "type": "array", "items": { "type": "string" } },
+              "datasets": {
+                "type": "array",
+                "items": {
+                  "allOf": [{ "$ref": "#/$defs/chartTypes/line/properties/data/properties/datasets/items" }],
+                  "properties": {
+                    "data": { "type": "array", "items": { "oneOf": [{ "type": "number" }, { "type": "null" }] } }
+                  }
+                }
+              }
+            },
+            "required": ["datasets"]
+          },
+          "options": {
+            "allOf": [{ "$ref": "#/$defs/options/common/core" }],
+            "properties": {
+              "elements": { "type": "object", "properties": { "line": { "$ref": "#/$defs/options/elements/line" }, "point": { "$ref": "#/$defs/options/elements/point" } } },
+              "plugins": { "$ref": "#/$defs/options/plugins" },
+              "scales": { "type": "object", "additionalProperties": { "$ref": "#/$defs/options/scales/radialLinear" } }
+            }
+          }
+        },
+        "required": ["type", "data"]
+      }
+    }
+  }
+}
