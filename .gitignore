@@ -60,7 +60,6 @@ temp/
 
 # Generated chart images (if any)
 charts/
-*.png
 *.jpg
 *.jpeg
 *.gif

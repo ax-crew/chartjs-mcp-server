@@ -1,7 +1,15 @@
 {
   "name": "chartjs-mcp-server",
-  "version": "1.0.0",
+  "type": "module",
+  "description": "A Model Context Protocol server for generating beautiful charts using Chart.js v4. Perfect for Claude Desktop, Cursor, and other MCP clients.",
+  "version": "1.0.1",
   "main": "dist/index.js",
+  "files": [
+    "dist/**/*",
+    "examples/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
@@ -12,12 +20,34 @@
     "test:integration": "./test-charts.sh",
     "test:single": "./test-single.sh",
     "test:tools": "npx @modelcontextprotocol/inspector --cli node dist/index.js --method tools/list",
-    "test:all": "npm run test && npm run test:integration"
+    "test:all": "npm run test && npm run test:integration",
+    "prepublishOnly": "npm run build && npm test"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "charts",
+    "chartjs",
+    "visualization",
+    "claude",
+    "cursor",
+    "data-visualization",
+    "ai-tools",
+    "typescript"
+  ],
+  "author": "@amitdeshmukh",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ax-crew/chartjs-mcp-server.git"
+  },
+  "homepage": "https://github.com/ax-crew/chartjs-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/ax-crew/chartjs-mcp-server/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.3",
     "canvas": "^3.1.2",

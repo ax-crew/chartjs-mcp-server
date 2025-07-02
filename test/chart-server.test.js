@@ -1,9 +1,13 @@
-const { test, describe } = require('node:test');
-const assert = require('node:assert');
-const fs = require('node:fs/promises');
-const path = require('node:path');
-const { Chart, registerables } = require('chart.js');
-const { createCanvas } = require('canvas');
+import { test, describe } from 'node:test';
+import assert from 'node:assert';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { Chart, registerables } from 'chart.js';
+import { createCanvas } from 'canvas';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const projectRoot = path.join(__dirname, '..');
 const examplesDir = path.join(projectRoot, 'examples');

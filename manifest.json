@@ -1,0 +1,46 @@
+{
+  "dxt_version": "0.1",
+  "name": "chartjs-mcp-server",
+  "display_name": "Chart.js MCP Server",
+  "version": "1.0.1",
+  "description": "Generate beautiful charts using Chart.js v4 - perfect for data visualization in Claude Desktop",
+  "long_description": "A powerful Model Context Protocol server that transforms your data into professional charts instantly. Supports bar charts, line charts, pie charts, scatter plots, bubble charts, radar charts, and more. All charts are generated as high-quality PNG images (800x600px) that you can save, share, or embed anywhere. Perfect for data analysis, presentations, and visualizing insights from your conversations with Claude.",
+  "author": {
+    "name": "@amitdeshmukh",
+    "url": "https://github.com/ax-crew/chartjs-mcp-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ax-crew/chartjs-mcp-server"
+  },
+  "homepage": "https://github.com/ax-crew/chartjs-mcp-server#readme",
+  "documentation": "https://github.com/ax-crew/chartjs-mcp-server#readme",
+  "support": "https://github.com/ax-crew/chartjs-mcp-server/issues",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"]
+    }
+  },
+  "tools": [
+    {
+      "name": "generateChart",
+      "description": "Generate professional charts using Chart.js v4 - supports bar, line, pie, doughnut, scatter, bubble, radar, and polar area charts"
+    }
+  ],
+  "keywords": [
+    "charts",
+    "visualization",
+    "data-analysis",
+    "chartjs",
+    "graphics",
+    "plots",
+    "reporting"
+  ],
+  "requirements": {
+    "node": ">=18.0.0"
+  }
+} 
