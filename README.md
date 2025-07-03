@@ -86,12 +86,8 @@ Here's what you can create with just a simple request:
 ### System Requirements
 
 - **Node.js 18+** - Required for running the MCP server
-- **Build tools** - For compiling Canvas native dependencies:
-  - **macOS**: Xcode Command Line Tools (`xcode-select --install`)
-  - **Windows**: Visual Studio Build Tools or similar
-  - **Linux**: build-essential package
 
-### Easy NPM Installation (Recommended)
+### Using with Claude Desktop
 
 The simplest way to use this MCP server:
 
@@ -107,7 +103,7 @@ The simplest way to use this MCP server:
      "mcpServers": {
        "chartjs": {
          "command": "npx",
-         "args": ["-y", "@ax-crew/chartjs-mcp-server"]
+         "args": ["@ax-crew/chartjs-mcp-server"]
        }
      }
    }
@@ -127,10 +123,10 @@ The simplest way to use this MCP server:
 Add to your Cursor settings or workspace configuration:
 ```json
 {
-  "mcp.servers": {
+  "mcpServers": {
     "chartjs": {
       "command": "npx",
-      "args": ["-y", "@ax-crew/chartjs-mcp-server"]
+      "args": ["@ax-crew/chartjs-mcp-server"]
     }
   }
 }
@@ -159,8 +155,6 @@ If you prefer to install from source or want to contribute:
      }
    }
    ```
-   
-   Replace `/full/path/to/chartjs-mcp-server` with the actual path where you cloned the repository.
 
 ---
 
