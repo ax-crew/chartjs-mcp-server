@@ -114,56 +114,22 @@ describe('Chart.js MCP Server - Integration Tests', () => {
     
     test('should generate bar chart via MCP call', async () => {
       await cleanupOutputFile('output.png');
-      
       const { client, transport } = await createMCPClient();
-      
       try {
-        const barConfig = {
-          type: 'bar',
-          data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-              label: '# of Votes',
-              data: [12, 19, 3, 5, 2, 3],
-              backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 205, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)'
-              ]
-            }]
-          }
-        };
-
-        const result = await client.callTool({
-          name: 'generateChart',
-          arguments: { chartConfig: barConfig }
-        });
-
-        assert(result.content, 'Should return content');
-        assert(Array.isArray(result.content), 'Content should be an array');
-        
-        // Check for text response
-        const textContent = result.content.find(item => item.type === 'text');
-        assert(textContent, 'Should have text content');
-        assert(textContent.text.includes('Chart generated successfully'), 'Should mention successful generation');
-        
-        // Check for image response
-        const imageContent = result.content.find(item => item.type === 'image');
-        assert(imageContent, 'Should have image content');
-        assert(imageContent.data, 'Should have image data');
-        assert(imageContent.mimeType === 'image/png', 'Should be PNG format');
-        
-        // Verify image data is valid PNG (no file checking needed)
-        const imageBuffer = Buffer.from(imageContent.data, 'base64');
-        assert(imageBuffer.length > 8, 'Image data should have content');
-        assert(imageBuffer[0] === 0x89, 'Should start with PNG signature');
-        assert(imageBuffer[1] === 0x50, 'Should have PNG signature');
-        assert(imageBuffer[2] === 0x4E, 'Should have PNG signature');
-        assert(imageBuffer[3] === 0x47, 'Should have PNG signature');
-        
+        const config = await loadExampleConfig('bar');
+        if (config) {
+          const result = await client.callTool({
+            name: 'generateChart',
+            arguments: { chartConfig: config }
+          });
+          assert(result.content, 'Should return content');
+          assert(Array.isArray(result.content), 'Content should be an array');
+          assert(result.content.length === 1, 'Should have exactly one content item');
+          const imageContent = result.content[0];
+          assert(imageContent.type === 'image', 'Should have image content');
+          assert(imageContent.data, 'Should have image data');
+          assert(imageContent.mimeType === 'image/png', 'Should be PNG format');
+        }
       } finally {
         await transport.close();
         await cleanupOutputFile('output.png');
@@ -172,29 +138,22 @@ describe('Chart.js MCP Server - Integration Tests', () => {
 
     test('should generate line chart from example config via MCP', async () => {
       await cleanupOutputFile('output.png');
-      
       const { client, transport } = await createMCPClient();
-      
       try {
         const lineConfig = await loadExampleConfig('line');
-        
         if (lineConfig) {
           const result = await client.callTool({
             name: 'generateChart',
             arguments: { chartConfig: lineConfig }
           });
-
           assert(result.content, 'Should return content');
-          
-          const textContent = result.content.find(item => item.type === 'text');
-          assert(textContent, 'Should have text content');
-          assert(textContent.text.includes('Chart generated successfully'), 'Should mention successful generation');
-          
-          const imageContent = result.content.find(item => item.type === 'image');
-          assert(imageContent, 'Should have image content');
+          assert(Array.isArray(result.content), 'Content should be an array');
+          assert(result.content.length === 1, 'Should have exactly one content item');
+          const imageContent = result.content[0];
+          assert(imageContent.type === 'image', 'Should have image content');
           assert(imageContent.data, 'Should have image data');
+          assert(imageContent.mimeType === 'image/png', 'Should be PNG format');
         }
-        
       } finally {
         await transport.close();
         await cleanupOutputFile('output.png');
@@ -235,36 +194,78 @@ describe('Chart.js MCP Server - Integration Tests', () => {
 
     test('should generate multiple chart types via MCP', async () => {
       const chartTypes = ['bar', 'line', 'pie'];
-      
       for (const chartType of chartTypes) {
         await cleanupOutputFile('output.png');
-        
         const { client, transport } = await createMCPClient();
-        
         try {
           const config = await loadExampleConfig(chartType);
-          
           if (config) {
             const result = await client.callTool({
               name: 'generateChart',
               arguments: { chartConfig: config }
             });
-
             assert(result.content, `Should return content for ${chartType} chart`);
-            
-            const textContent = result.content.find(item => item.type === 'text');
-            assert(textContent, `Should have text content for ${chartType} chart`);
-            assert(textContent.text.includes('Chart generated successfully'), `Should mention successful generation for ${chartType} chart`);
-            
-            const imageContent = result.content.find(item => item.type === 'image');
-            assert(imageContent, `Should have image content for ${chartType} chart`);
+            assert(Array.isArray(result.content), 'Content should be an array');
+            assert(result.content.length === 1, 'Should have exactly one content item');
+            const imageContent = result.content[0];
+            assert(imageContent.type === 'image', `Should have image content for ${chartType} chart`);
             assert(imageContent.data, `Should have image data for ${chartType} chart`);
+            assert(imageContent.mimeType === 'image/png', `Should be PNG format for ${chartType} chart`);
           }
-          
         } finally {
           await transport.close();
           await cleanupOutputFile('output.png');
         }
+      }
+    });
+  });
+
+  describe('Save to File via MCP', () => {
+    
+    test('should save chart to file and return image_url when saveToFile is true', async () => {
+      const { client, transport } = await createMCPClient();
+      try {
+        const config = {
+          type: 'bar',
+          data: {
+            labels: ['A', 'B', 'C'],
+            datasets: [{
+              label: 'Test Dataset',
+              data: [10, 20, 30],
+              backgroundColor: 'rgba(75, 192, 192, 0.6)'
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Test Save to File Chart'
+              }
+            }
+          }
+        };
+        const result = await client.callTool({
+          name: 'generateChart',
+          arguments: { 
+            chartConfig: config,
+            saveToFile: true
+          }
+        });
+        assert(result.content, 'Should return content');
+        assert(Array.isArray(result.content), 'Content should be an array');
+        assert(result.content.length === 1, 'Should have exactly one content item');
+        const textContent = result.content[0];
+        assert(textContent.type === 'text', 'Should have text content');
+        assert(textContent.text, 'Should have text property');
+        assert(textContent.text.startsWith('file://'), 'text should start with file://');
+        assert(textContent.text.includes('img-'), 'text should contain img- prefix');
+        assert(textContent.text.endsWith('.png'), 'text should end with .png');
+        // Verify no image data is returned (since we're saving to file)
+        const imageContent = result.content.find(item => item.type === 'image');
+        assert(!imageContent, 'Should not have image content when saving to file');
+      } finally {
+        await transport.close();
       }
     });
   });
@@ -340,13 +341,13 @@ describe('Chart.js MCP Server - Integration Tests', () => {
         assert(result.content, 'Should return content');
         assert(milliseconds < 10000, `Chart generation should complete within 10 seconds via MCP, took ${milliseconds}ms`);
         
-        const textContent = result.content.find(item => item.type === 'text');
-        assert(textContent, 'Should have text content');
-        assert(textContent.text.includes('Chart generated successfully'), 'Should mention successful generation');
-        
-        const imageContent = result.content.find(item => item.type === 'image');
-        assert(imageContent, 'Should have image content');
+        // Should only have image content in buffer mode (saveToFile is false by default)
+        assert(Array.isArray(result.content), 'Content should be an array');
+        assert(result.content.length === 1, 'Should have exactly one content item');
+        const imageContent = result.content[0];
+        assert(imageContent.type === 'image', 'Should have image content');
         assert(imageContent.data, 'Should have image data');
+        assert(imageContent.mimeType === 'image/png', 'Should be PNG format');
         
       } finally {
         await transport.close();

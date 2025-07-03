@@ -14,7 +14,7 @@ const examplesDir = path.join(projectRoot, 'examples');
 // Test wrapper that uses the shared chart generation logic and saves to examples
 async function generateChartForTest(chartConfig, outputFilename = 'chart.png') {
   // Use the actual source code for chart generation
-  const result = await generateChart(chartConfig);
+  const result = await generateChart(chartConfig, false);
   
   if (result.success) {
     // For tests, we save to examples folder for documentation

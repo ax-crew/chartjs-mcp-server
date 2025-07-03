@@ -1,12 +1,15 @@
 import { Chart, registerables, ChartConfiguration, ChartItem } from 'chart.js';
 import { createCanvas } from 'canvas';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Register Chart.js components
 Chart.register(...registerables);
 
 type ChartGenerationSuccess = {
   success: true;
-  buffer: Buffer;
+  buffer?: Buffer;
+  filePath?: string;
   message: string;
 };
 
@@ -18,9 +21,11 @@ type ChartGenerationError = {
 
 type ChartGenerationResult = ChartGenerationSuccess | ChartGenerationError;
 
-export async function generateChart(chartConfig: any): Promise<ChartGenerationResult> {
+export async function generateChart(
+  chartConfig: ChartConfiguration, 
+  saveToFile: boolean = false
+): Promise<ChartGenerationResult> {
   try {
-    const { type, data, options, ...additionalConfig } = chartConfig;
     const width = 800;
     const height = 600;
 
@@ -28,32 +33,48 @@ export async function generateChart(chartConfig: any): Promise<ChartGenerationRe
     const ctx = canvas.getContext('2d');
 
     // Validate basic required structure
-    if (!data || !data.datasets || !Array.isArray(data.datasets)) {
+    if (!chartConfig.data || !chartConfig.data.datasets || !Array.isArray(chartConfig.data.datasets)) {
       throw new Error('Invalid chart configuration: data.datasets is required and must be an array');
     }
 
-    if (data.datasets.length === 0) {
+    if (chartConfig.data.datasets.length === 0) {
       throw new Error('Invalid chart configuration: at least one dataset is required');
     }
 
-    // Construct the full Chart.js configuration
-    const config = { 
-      type, 
-      data, 
-      options,
-      ...additionalConfig
-    };
-
-    // Create the chart - Chart.js will handle detailed validation
-    const chart = new Chart(ctx as unknown as ChartItem, config);
+    // Create the chart directly with chartConfig - Chart.js will handle detailed validation
+    const chart = new Chart(ctx as unknown as ChartItem, chartConfig);
 
     const buffer = canvas.toBuffer('image/png');
 
-    return {
-      success: true,
-      buffer,
-      message: "Chart generated successfully"
-    };
+    if (saveToFile) {
+      // Generate file path with timestamp
+      const fileName = `img-${Date.now()}.png`;
+      const filePath = path.join(process.cwd(), fileName);
+      
+      // Ensure directory exists
+      const dir = path.dirname(filePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      
+      // Save to file
+      await fs.promises.writeFile(filePath, buffer);
+      
+      // Return file:// URL
+      const fileUrl = `file://${filePath}`;
+      
+      return {
+        success: true,
+        filePath: fileUrl,
+        message: `Chart saved to ${fileUrl}`
+      };
+    } else {
+      return {
+        success: true,
+        buffer,
+        message: "Chart generated successfully"
+      };
+    }
   } catch (error) {
     return {
       success: false,
