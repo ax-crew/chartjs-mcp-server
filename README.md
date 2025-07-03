@@ -16,7 +16,12 @@ Transform your data into beautiful, professional charts instantly! This MCP serv
 - 🕸️ **Radar Charts** - Great for multi-dimensional comparisons
 - 🌟 **Polar Area Charts** - Beautiful radial visualizations
 
-All charts are generated as high-quality PNG images (800x600px) that you can save, share, or embed anywhere.
+All charts can be generated as:
+- 📸 **PNG Images** (800x600px) - Perfect for saving, sharing, or embedding 
+- 🌐 **Interactive HTML** - Self-contained divs with hover tooltips and animations
+
+![Interactive Chart Demo](./examples/interactive.png)
+*Interactive HTML charts with hover tooltips and animations - perfect for web applications!*
 
 ### 🖼️ See It In Action
 
@@ -169,6 +174,41 @@ Once configured, you can ask your AI assistant to create charts using natural la
 - *"Make a line chart showing website visitors over 6 months: Jan 1000, Feb 1200, Mar 1500, Apr 1300, May 1800, Jun 2100"*
 - *"Generate a bar chart comparing programming languages: JavaScript 65%, Python 45%, Java 35%, Go 25%"*
 
+### Output Formats
+
+You can specify the output format when creating charts:
+
+**PNG Images (Default)**
+```
+"Create a bar chart as a PNG image showing sales data..."
+```
+- High-quality static images (800x600px)
+- Perfect for documents, presentations, and sharing
+- Works everywhere
+
+**Interactive HTML**
+```
+"Create an interactive HTML doughnut chart showing project status..."
+```
+- Self-contained HTML divs with embedded Chart.js
+- Hover tooltips and animations
+- Perfect for web applications and frontends
+- Just inject the HTML into any webpage
+
+**Example Interactive HTML Usage:**
+```javascript
+// The AI returns HTML like this:
+const chartHtml = `<div id="chart-container-123">...</div>`;
+
+// You can inject it anywhere:
+document.getElementById('dashboard').innerHTML = chartHtml;
+
+// Works with any framework
+// React: <div dangerouslySetInnerHTML={{ __html: chartHtml }} />
+// Vue: <div v-html="chartHtml"></div>
+// Angular: <div [innerHTML]="chartHtml"></div>
+```
+
 ### Chart Types Available
 
 | Chart Type | Best For | Example Use Case |
@@ -189,6 +229,8 @@ Once configured, you can ask your AI assistant to create charts using natural la
 - 🏷️ **Labels & Titles**: Add context with custom labels
 - 📱 **Responsive**: Charts work great at any size
 - 🎛️ **Chart.js Options**: Full access to Chart.js v4 features
+- 🖱️ **Interactive Elements**: Tooltips, hover effects, and animations (HTML format)
+- 🔗 **Framework Agnostic**: HTML output works with React, Vue, Angular, and vanilla JS
 
 ---
 
@@ -300,10 +342,12 @@ The server exposes one primary tool for chart generation:
 
 **Parameters:**
 - `chartConfig` (object) - Complete Chart.js v4 configuration
-- `outputPath` (string, optional) - Custom output file path
+- `outputFormat` (string, optional) - Output format: `'png'` (default) or `'html'`
+- `saveToFile` (boolean, optional) - Save PNG to file (only applies to PNG format)
 
 **Returns:**
-- Success: `{ success: true, outputPath: string, message: string }`
+- PNG Success: `{ success: true, buffer: Buffer, message: string }` or `{ success: true, pngFilePath: string, message: string }`
+- HTML Success: `{ success: true, htmlSnippet: string, message: string }`
 - Error: `{ success: false, error: string, message: string }`
 
 **Example:**
@@ -336,6 +380,7 @@ The server exposes one primary tool for chart generation:
 
 - ✅ **Complete MCP Server** - Ready to use with any MCP client
 - ✅ **8 Chart Types** - All major Chart.js chart types supported
+- ✅ **Dual Output Formats** - PNG images and interactive HTML divs
 - ✅ **Example Configurations** - 8 working examples in `/examples`
 - ✅ **Visual References** - Generated PNG samples for each chart type
 - ✅ **Comprehensive Tests** - 24 tests ensuring reliability

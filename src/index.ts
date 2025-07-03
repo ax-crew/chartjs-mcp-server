@@ -19,7 +19,7 @@ server.registerTool(
   "generateChart",
   {
     title: "Generate Chart",
-    description: "Generates a chart using Chart.js and returns it as an image or saves it to file. Supports full Chart.js v4 configuration options.",
+    description: "Generates charts using Chart.js. Can output PNG images or interactive HTML divs. Supports full Chart.js v4 configuration options.",
     inputSchema: {
       chartConfig: z.object({
         type: z.enum(['bar', 'line', 'scatter', 'bubble', 'pie', 'doughnut', 'polarArea', 'radar']).describe("Chart type"),
@@ -34,13 +34,27 @@ server.registerTool(
         options: z.any().optional().describe("Chart.js options object - supports full Chart.js v4 configuration"),
         // Allow any additional top-level properties for full Chart.js compatibility
       }).passthrough().describe("Complete Chart.js configuration object supporting full v4 schema"),
-      saveToFile: z.boolean().optional().default(false).describe("Whether to save the chart to a file and return file:// path via image_url property instead of base64 data.")
+      outputFormat: z.enum(['png', 'html']).optional().default('png').describe("Output format: 'png' for static image, 'html' for interactive HTML div"),
+      saveToFile: z.boolean().optional().default(false).describe("Whether to save PNG to file (only applies to PNG format)")
     }
   },
-  async ({ chartConfig, saveToFile }) => {
-    const result = await generateChart(chartConfig, saveToFile);
+  async ({ chartConfig, outputFormat, saveToFile }) => {
+    const result = await generateChart(chartConfig, outputFormat, saveToFile);
 
     if (result.success) {
+      // Handle HTML format
+      if (result.htmlSnippet) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: result.htmlSnippet
+            }
+          ]
+        };
+      }
+      
+      // Handle PNG format
       if (result.buffer) {
         // Return base64 image data
         return {
@@ -52,13 +66,13 @@ server.registerTool(
             }
           ]
         };
-      } else if (result.filePath) {
-        // Return file path as custom JSON inside content, with type property
+      } else if (result.pngFilePath) {
+        // Return file path
         return {
           content: [
             {
               type: 'text',
-              text: result.filePath
+              text: result.pngFilePath
             }
           ]
         };
