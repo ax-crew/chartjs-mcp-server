@@ -67,9 +67,17 @@ export async function generateChart(
       throw new Error('Invalid chart configuration: at least one dataset is required');
     }
 
+    // Clean up the config to handle undefined values
+    const cleanedConfig = { ...chartConfig };
+    
+    // If options is undefined, remove it from the config (Chart.js will use defaults)
+    if (cleanedConfig.options === undefined) {
+      delete cleanedConfig.options;
+    }
+
     // Handle HTML format
     if (outputFormat === 'html') {
-      const htmlSnippet = generateHtmlSnippet(chartConfig);
+      const htmlSnippet = generateHtmlSnippet(cleanedConfig);
       return {
         success: true,
         htmlSnippet,
@@ -84,8 +92,8 @@ export async function generateChart(
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
-    // Create the chart directly with chartConfig - Chart.js will handle detailed validation
-    const chart = new Chart(ctx as unknown as ChartItem, chartConfig);
+    // Create the chart directly with cleanedConfig - Chart.js will handle detailed validation
+    const chart = new Chart(ctx as unknown as ChartItem, cleanedConfig);
 
     const buffer = canvas.toBuffer('image/png');
 
