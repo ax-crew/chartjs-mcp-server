@@ -31,7 +31,7 @@ server.registerTool(
             // Allow any additional dataset properties for full Chart.js compatibility
           }).passthrough()).describe("Chart datasets"),
         }).describe("Chart data"),
-        options: z.any().optional().describe("Chart.js options object - supports full Chart.js v4 configuration"),
+        options: z.record(z.any()).optional().describe("Chart.js options object - supports full Chart.js v4 configuration"),
         // Allow any additional top-level properties for full Chart.js compatibility
       }).passthrough().describe("Complete Chart.js configuration object supporting full v4 schema"),
       outputFormat: z.enum(['png', 'html']).optional().default('png').describe("Output format: 'png' for static image, 'html' for interactive HTML div"),
