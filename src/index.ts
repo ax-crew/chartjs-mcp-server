@@ -21,26 +21,7 @@ server.registerTool(
     title: "Generate Chart",
     description: "Generates charts using Chart.js. Can output PNG images or interactive HTML divs. Supports full Chart.js v4 configuration options.",
     inputSchema: {
-      chartConfig: z.object({
-        type: z.enum(['bar', 'line', 'scatter', 'bubble', 'pie', 'doughnut', 'polarArea', 'radar']).describe("Chart type"),
-        data: z.object({
-          labels: z.array(z.string()).optional().describe("Chart labels (optional for some chart types)"),
-          datasets: z.array(z.object({
-            label: z.string().optional().describe("Dataset label"),
-            data: z.array(z.union([
-              z.number(),
-              z.object({ x: z.number(), y: z.number() }),
-              z.object({ x: z.number(), y: z.number(), r: z.number() }),
-              z.null()
-            ])).describe("Data points - numbers for bar/line/pie charts, {x,y} objects for scatter charts, {x,y,r} objects for bubble charts"),
-            backgroundColor: z.union([z.string(), z.array(z.string())]).optional().describe("Background color(s)"),
-            borderColor: z.union([z.string(), z.array(z.string())]).optional().describe("Border color(s)"),
-            borderWidth: z.number().optional().describe("Border width"),
-            fill: z.boolean().optional().describe("Whether to fill the area under the line"),
-          })).describe("Chart datasets"),
-        }).describe("Chart data"),
-        options: z.record(z.any()).optional().describe("Chart.js options object - supports full Chart.js v4 configuration"),
-      }).describe("Complete Chart.js configuration object supporting full v4 schema"),
+      chartConfig: z.any().describe("Complete Chart.js configuration object supporting full v4 schema"),
       outputFormat: z.enum(['png', 'html']).optional().default('png').describe("Output format: 'png' for static image, 'html' for interactive HTML div"),
       saveToFile: z.boolean().optional().default(false).describe("Whether to save PNG to file (only applies to PNG format)")
     }
@@ -60,7 +41,7 @@ server.registerTool(
           ]
         };
       }
-      
+
       // Handle PNG format
       if (result.buffer) {
         // Return base64 image data
@@ -94,7 +75,7 @@ server.registerTool(
     } else {
       return {
         content: [
-          { 
+          {
             type: "text", 
             text: `${result.message}\n\nPlease ensure your configuration follows the Chart.js v4 schema. Common issues:\n- Check data format matches chart type (e.g., scatter charts need {x, y} objects)\n- Verify all required dataset properties are provided\n- Ensure chart type is supported: ${['bar', 'line', 'scatter', 'bubble', 'pie', 'doughnut', 'polarArea', 'radar'].join(', ')}` 
           }
