@@ -171,20 +171,18 @@ describe('Chart.js MCP Server - Integration Tests', () => {
           data: {}
         };
 
-        // Should throw MCP validation error before reaching server
-        let errorThrown = false;
-        try {
-          await client.callTool({
-            name: 'generateChart',
-            arguments: { chartConfig: invalidConfig }
-          });
-        } catch (error) {
-          errorThrown = true;
-          assert(error.code === -32602, 'Should be MCP validation error');
-          assert(error.message.includes('Invalid arguments'), 'Should mention invalid arguments');
-        }
+        // Should return error content instead of throwing
+        const result = await client.callTool({
+          name: 'generateChart',
+          arguments: { chartConfig: invalidConfig }
+        });
         
-        assert(errorThrown, 'Should throw validation error for invalid config');
+        assert(result.content, 'Should return content');
+        assert(Array.isArray(result.content), 'Content should be an array');
+        assert(result.content.length === 1, 'Should have exactly one content item');
+        const textContent = result.content[0];
+        assert(textContent.type === 'text', 'Should have text content');
+        assert(textContent.text.includes('Invalid chart type'), 'Should mention invalid chart type');
         
       } finally {
         await transport.close();
@@ -286,21 +284,18 @@ describe('Chart.js MCP Server - Integration Tests', () => {
           }
         };
 
-        // Should throw MCP validation error before reaching server
-        let errorThrown = false;
-        try {
-          await client.callTool({
-            name: 'generateChart',
-            arguments: { chartConfig: invalidConfig }
-          });
-        } catch (error) {
-          errorThrown = true;
-          assert(error.code === -32602, 'Should be MCP validation error');
-          assert(error.message.includes('Invalid arguments'), 'Should mention invalid arguments');
-          assert(error.message.includes('datasets'), 'Should mention datasets in error');
-        }
+        // Should return error content instead of throwing
+        const result = await client.callTool({
+          name: 'generateChart',
+          arguments: { chartConfig: invalidConfig }
+        });
         
-        assert(errorThrown, 'Should throw validation error for missing datasets');
+        assert(result.content, 'Should return content');
+        assert(Array.isArray(result.content), 'Content should be an array');
+        assert(result.content.length === 1, 'Should have exactly one content item');
+        const textContent = result.content[0];
+        assert(textContent.type === 'text', 'Should have text content');
+        assert(textContent.text.includes('datasets'), 'Should mention datasets in error');
         
       } finally {
         await transport.close();
