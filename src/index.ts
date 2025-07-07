@@ -27,13 +27,20 @@ server.registerTool(
           labels: z.array(z.string()).optional().describe("Chart labels (optional for some chart types)"),
           datasets: z.array(z.object({
             label: z.string().optional().describe("Dataset label"),
-            data: z.array(z.any()).describe("Data points - format varies by chart type"),
-            // Allow any additional dataset properties for full Chart.js compatibility
-          }).passthrough()).describe("Chart datasets"),
+            data: z.array(z.union([
+              z.number(),
+              z.object({ x: z.number(), y: z.number() }),
+              z.object({ x: z.number(), y: z.number(), r: z.number() }),
+              z.null()
+            ])).describe("Data points - numbers for bar/line/pie charts, {x,y} objects for scatter charts, {x,y,r} objects for bubble charts"),
+            backgroundColor: z.union([z.string(), z.array(z.string())]).optional().describe("Background color(s)"),
+            borderColor: z.union([z.string(), z.array(z.string())]).optional().describe("Border color(s)"),
+            borderWidth: z.number().optional().describe("Border width"),
+            fill: z.boolean().optional().describe("Whether to fill the area under the line"),
+          })).describe("Chart datasets"),
         }).describe("Chart data"),
         options: z.record(z.any()).optional().describe("Chart.js options object - supports full Chart.js v4 configuration"),
-        // Allow any additional top-level properties for full Chart.js compatibility
-      }).passthrough().describe("Complete Chart.js configuration object supporting full v4 schema"),
+      }).describe("Complete Chart.js configuration object supporting full v4 schema"),
       outputFormat: z.enum(['png', 'html']).optional().default('png').describe("Output format: 'png' for static image, 'html' for interactive HTML div"),
       saveToFile: z.boolean().optional().default(false).describe("Whether to save PNG to file (only applies to PNG format)")
     }
