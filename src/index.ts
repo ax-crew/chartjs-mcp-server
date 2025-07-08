@@ -16,31 +16,43 @@ const server = new McpServer({
 
 // Validation function for chart configuration
 function validateChartConfig(chartConfig: any) {
-  // Check if chartConfig is an object
-  if (!chartConfig || typeof chartConfig !== 'object') {
+  // Handle case where chartConfig is a string (parse it)
+  let config = chartConfig;
+  if (typeof chartConfig === 'string') {
+    try {
+      config = JSON.parse(chartConfig);
+    } catch (parseError) {
+      throw new Error('Chart configuration string is not valid JSON');
+    }
+  }
+
+  // Check if config is an object
+  if (!config || typeof config !== 'object') {
     throw new Error('Chart configuration must be an object');
   }
 
   // Check for valid chart type
   const validTypes = ['bar', 'line', 'scatter', 'bubble', 'pie', 'doughnut', 'polarArea', 'radar'];
-  if (!chartConfig.type || !validTypes.includes(chartConfig.type)) {
+  if (!config.type || !validTypes.includes(config.type)) {
     throw new Error(`Invalid chart type. Must be one of: ${validTypes.join(', ')}`);
   }
 
   // Check for data object
-  if (!chartConfig.data || typeof chartConfig.data !== 'object') {
+  if (!config.data || typeof config.data !== 'object') {
     throw new Error('Chart configuration must include a data object');
   }
 
   // Check for datasets array
-  if (!chartConfig.data.datasets || !Array.isArray(chartConfig.data.datasets)) {
+  if (!config.data.datasets || !Array.isArray(config.data.datasets)) {
     throw new Error('Chart data must include a datasets array');
   }
 
   // Check for at least one dataset
-  if (chartConfig.data.datasets.length === 0) {
+  if (config.data.datasets.length === 0) {
     throw new Error('Chart data must include at least one dataset');
   }
+
+  return config; // Return the parsed config
 }
 
 // Register the chart generation tool
@@ -56,9 +68,10 @@ server.registerTool(
     }
   },
   async ({ chartConfig, outputFormat, saveToFile }) => {
-    // Validate chart configuration first
+    // Validate chart configuration first and get parsed config
+    let parsedChartConfig;
     try {
-      validateChartConfig(chartConfig);
+      parsedChartConfig = validateChartConfig(chartConfig);
     } catch (validationError) {
       // Return validation error as content
       const message = validationError instanceof Error ? validationError.message : String(validationError);
@@ -72,7 +85,7 @@ server.registerTool(
       };
     }
 
-    const result = await generateChart(chartConfig, outputFormat, saveToFile);
+    const result = await generateChart(parsedChartConfig, outputFormat, saveToFile);
 
     if (result.success) {
       // Handle HTML format
