@@ -1,9 +1,50 @@
+
+
+
 # Chart.js MCP Server
+
+[![npm version](https://img.shields.io/npm/v/@ax-crew/chartjs-mcp-server.svg)](https://www.npmjs.com/package/@ax-crew/chartjs-mcp-server)
+[![npm downloads](https://img.shields.io/npm/dm/@ax-crew/chartjs-mcp-server.svg)](https://www.npmjs.com/package/@ax-crew/chartjs-mcp-server)
+[![license](https://img.shields.io/npm/l/@ax-crew/chartjs-mcp-server.svg)](./LICENSE)
 
 A Model Context Protocol (MCP) server that generates beautiful charts using Chart.js v4. Perfect for data visualization in Claude Desktop, Cursor, and other MCP-compatible applications.
 
 ![Chart Examples](./examples/bubble.png)
 *Just ask "Create a bubble chart showing company performance" and get professional results instantly!*
+
+## 📦 NPM Package
+
+- **Name**: `@ax-crew/chartjs-mcp-server`
+- **Version**: `3.1.5`
+- **Node**: `>=18`
+- **CLI bin**: `chartjs-mcp-server`
+- **NPM**: [`@ax-crew/chartjs-mcp-server`](https://www.npmjs.com/package/@ax-crew/chartjs-mcp-server)
+
+### Install
+
+```bash
+# npm
+npm install -D @ax-crew/chartjs-mcp-server
+
+# pnpm
+pnpm add -D @ax-crew/chartjs-mcp-server
+
+# yarn
+yarn add -D @ax-crew/chartjs-mcp-server
+
+# bun
+bun add -d @ax-crew/chartjs-mcp-server
+```
+
+### Run
+
+```bash
+# via npx (recommended for MCP clients)
+npx @ax-crew/chartjs-mcp-server
+
+# or if installed locally/globally
+chartjs-mcp-server
+```
 
 ## 🎯 What This Does
 
