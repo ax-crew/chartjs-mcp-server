@@ -88,7 +88,7 @@ server.registerTool(
     const result = await generateChart(parsedChartConfig, outputFormat, saveToFile);
 
     if (result.success) {
-      // Handle  format
+      // Handle HTML format
       if (result.htmlSnippet) {
         return {
           content: [
