@@ -88,13 +88,14 @@ server.registerTool(
     const result = await generateChart(parsedChartConfig, outputFormat, saveToFile);
 
     if (result.success) {
-      // Handle HTML format
+      // Handle  format
       if (result.htmlSnippet) {
         return {
           content: [
             {
               type: 'text',
-              text: result.htmlSnippet
+              text: result.htmlSnippet,
+              mimeType: "text/html"
             }
           ]
         };
